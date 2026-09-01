@@ -47,4 +47,13 @@ describe('createRomajiMatcher', () => {
     expect(matcher.tokenIndex).toBe(0);
     expect(matcher.feed('a')).toBe('complete');
   });
+
+  it('skips a space after ascii so で can be typed without pressing space', () => {
+    const matcher = createRomajiMatcher('`user` で');
+    for (const key of Array.from('`user`')) {
+      expect(matcher.feed(key)).toBe('ok');
+    }
+    expect(matcher.feed('d')).toBe('ok');
+    expect(matcher.feed('e')).toBe('complete');
+  });
 });

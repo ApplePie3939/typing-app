@@ -268,6 +268,14 @@ function optionsForToken(token: string, next: string | undefined): string[] {
   return romajiOptions(token);
 }
 
+function isSkippableSpace(token: string | undefined): boolean {
+  return token === ' ' || token === '　';
+}
+
+export function visibleRomaji(text: string): string {
+  return text.replaceAll(' ', '␣').replaceAll('\n', '↵');
+}
+
 export type RomajiResult = 'ok' | 'miss' | 'complete';
 
 export function createRomajiMatcher(reading: string) {
@@ -299,6 +307,11 @@ export function createRomajiMatcher(reading: string) {
       committed += typed;
       index += 1;
       typed = '';
+      return feed(key);
+    }
+    if (!typed && isSkippableSpace(tokens[index]) && key !== ' ') {
+      committed += tokens[index];
+      index += 1;
       return feed(key);
     }
     return 'miss';

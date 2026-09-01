@@ -129,7 +129,6 @@ export function fingerFromCode(code: string): Finger {
 }
 
 export function typingCharFromEvent(event: KeyboardEvent): string | undefined {
-  if (event.isComposing) return undefined;
   if (event.ctrlKey || event.metaKey || event.altKey) return undefined;
   if (
     event.key === 'Shift' ||
@@ -140,8 +139,12 @@ export function typingCharFromEvent(event: KeyboardEvent): string | undefined {
     return undefined;
   }
   if (event.key === 'Backspace' || event.key === 'Tab' || event.key === 'Escape') return undefined;
-  if (event.key === 'Enter') return '\n';
-  if (event.key === ' ') return ' ';
+  if (event.code === 'Space' || event.key === ' ') return ' ';
+  if (event.code === 'Enter' || event.key === 'Enter') return '\n';
+  if (event.code.startsWith('Key') && event.code.length === 4) {
+    return event.code.slice(3).toLowerCase();
+  }
+  if (event.isComposing || event.key === 'Process') return undefined;
   if (event.key.length === 1) return event.key;
   return undefined;
 }

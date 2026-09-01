@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { fingerFromCode, physicalKeyFromCode, typingCharFromEvent } from '../game/keyboard.ts';
 import { getPlayerId } from '../game/player.ts';
-import { createRomajiMatcher, unitsCompleted } from '../game/romaji.ts';
+import { createRomajiMatcher, unitsCompleted, visibleRomaji } from '../game/romaji.ts';
 import {
   PLAY_SECONDS,
   formatAccuracyPercent,
@@ -465,10 +465,10 @@ function PlayScreen({
           </div>
         </div>
         <div className={`composer ${missFlash ? 'miss' : ''}`}>
-          <span>{matcherRef.current.committed}</span>
-          <span>{matcherRef.current.currentTyped}</span>
-          <span className="hint-cur">{hint.current}</span>
-          <span className="hint">{hint.rest}</span>
+          <span>{visibleRomaji(matcherRef.current.committed)}</span>
+          <span>{visibleRomaji(matcherRef.current.currentTyped)}</span>
+          <span className="hint-cur">{visibleRomaji(hint.current)}</span>
+          <span className="hint">{visibleRomaji(hint.rest)}</span>
         </div>
       </div>
     </div>
