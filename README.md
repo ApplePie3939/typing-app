@@ -21,12 +21,12 @@ just dev
 
 ## コマンド
 
-| コマンド | 内容 |
-| --- | --- |
-| `just dev` | ローカル開発サーバ |
-| `just check` | lint / typecheck / test / build |
-| `just db-migrate` | ローカル D1 に migration を適用 |
-| `just db-seed` | ローカル D1 に問題データを投入 |
-| `just deploy` | 本番 D1 の migration 後に Worker へデプロイ |
+| コマンド          | 内容                                        |
+| ----------------- | ------------------------------------------- |
+| `just dev`        | ローカル開発サーバ                          |
+| `just check`      | lint / typecheck / test / build             |
+| `just db-migrate` | ローカル D1 に migration を適用             |
+| `just db-seed`    | ローカル D1 に問題データを投入              |
+| `just deploy`     | 本番 D1 の migration 後に Worker へデプロイ |
 
 詳細は `docs/specs/mvp.md` を参照。
