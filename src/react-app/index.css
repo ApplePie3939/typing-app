@@ -236,12 +236,21 @@ h1 {
 .composer.miss {
   background: #ffe0ea;
 }
+.composer-committed,
+.composer-typed {
+  color: #3a2a33;
+}
+.composer-caret {
+  color: #ff7ab0;
+  font-weight: 700;
+  margin: 0 1px;
+}
 .hint {
   color: #d8c4ce;
 }
 .hint-cur {
-  background: #ff7ab0;
-  color: #fff;
+  color: #ff7ab0;
+  opacity: 0.55;
 }
 .tag {
   display: inline-block;

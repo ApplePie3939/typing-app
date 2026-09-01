@@ -262,10 +262,33 @@ export function tokenizeKana(input: string): string[] {
   return tokens;
 }
 
-function optionsForToken(token: string, next: string | undefined): string[] {
+const CHOUON = new Set(['ー', '〜']);
+const VOWELS = new Set(['a', 'i', 'u', 'e', 'o']);
+
+function optionsForMora(token: string, next: string | undefined): string[] {
   if (token === 'ん') return nOptions(next);
   if (token.startsWith('っ') && token.length > 1) return sokuonOptions(token.slice(1));
   return romajiOptions(token);
+}
+
+function chouonOptions(prev: string | undefined): string[] {
+  const vowels: string[] = [];
+  if (prev) {
+    for (const option of optionsForMora(prev, undefined)) {
+      const last = option.at(-1);
+      if (last && VOWELS.has(last)) vowels.push(last);
+    }
+  }
+  return [...new Set(['-', ...vowels])];
+}
+
+function optionsForToken(
+  token: string,
+  next: string | undefined,
+  prev: string | undefined,
+): string[] {
+  if (CHOUON.has(token)) return chouonOptions(prev);
+  return optionsForMora(token, next);
 }
 
 function isSkippableSpace(token: string | undefined): boolean {
@@ -280,7 +303,7 @@ export type RomajiResult = 'ok' | 'miss' | 'complete';
 
 export function createRomajiMatcher(reading: string) {
   const tokens = tokenizeKana(reading);
-  const options = tokens.map((token, i) => optionsForToken(token, tokens[i + 1]));
+  const options = tokens.map((token, i) => optionsForToken(token, tokens[i + 1], tokens[i - 1]));
   let index = 0;
   let typed = '';
   let committed = '';

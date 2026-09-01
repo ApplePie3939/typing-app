@@ -103,4 +103,52 @@ describe('createRomajiMatcher', () => {
     expect(matcher.feed('d')).toBe('ok');
     expect(matcher.feed('e')).toBe('complete');
   });
+
+  it('advances from b03 period with a, not s', () => {
+    const prefix = 'roguinngamennmadeowarimasita.';
+    const afterA = createRomajiMatcher('ろぐいんがめんまでおわりました。あした');
+    for (const key of Array.from(prefix)) {
+      expect(afterA.feed(key)).not.toBe('miss');
+    }
+    const indexAfterPeriod = afterA.tokenIndex;
+    expect(afterA.feed('a')).toBe('ok');
+    expect(afterA.tokenIndex).toBe(indexAfterPeriod + 1);
+
+    const afterS = createRomajiMatcher('ろぐいんがめんまでおわりました。あした');
+    for (const key of Array.from(prefix)) {
+      expect(afterS.feed(key)).not.toBe('miss');
+    }
+    expect(afterS.feed('s')).toBe('miss');
+    expect(afterS.tokenIndex).toBe(indexAfterPeriod);
+  });
+
+  it('completes あした as asita and ashita', () => {
+    const asita = createRomajiMatcher('あした');
+    expect(
+      Array.from('asita')
+        .map((k) => asita.feed(k))
+        .at(-1),
+    ).toBe('complete');
+    const ashita = createRomajiMatcher('あした');
+    expect(
+      Array.from('ashita')
+        .map((k) => ashita.feed(k))
+        .at(-1),
+    ).toBe('complete');
+  });
+
+  it('completes でー as dee and de-', () => {
+    const dee = createRomajiMatcher('でー');
+    expect(
+      Array.from('dee')
+        .map((k) => dee.feed(k))
+        .at(-1),
+    ).toBe('complete');
+    const deHyphen = createRomajiMatcher('でー');
+    expect(
+      Array.from('de-')
+        .map((k) => deHyphen.feed(k))
+        .at(-1),
+    ).toBe('complete');
+  });
 });

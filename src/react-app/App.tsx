@@ -465,9 +465,16 @@ function PlayScreen({
           </div>
         </div>
         <div className={`composer ${missFlash ? 'miss' : ''}`}>
-          <span>{visibleRomaji(matcherRef.current.committed)}</span>
-          <span>{visibleRomaji(matcherRef.current.currentTyped)}</span>
-          <span className="hint-cur">{visibleRomaji(hint.current)}</span>
+          <span className="composer-committed">{visibleRomaji(matcherRef.current.committed)}</span>
+          <span className="composer-typed">{visibleRomaji(matcherRef.current.currentTyped)}</span>
+          {hint.current ? (
+            <>
+              <span className="composer-caret" aria-hidden="true">
+                |
+              </span>
+              <span className="hint-cur">{visibleRomaji(hint.current)}</span>
+            </>
+          ) : null}
           <span className="hint">{visibleRomaji(hint.rest)}</span>
         </div>
       </div>
