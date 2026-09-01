@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>チャット年収打 — UI方向の比較</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1c1a24;
+      --muted: #5c5868;
+      --line: #ece8f2;
+      --bg: #f7f4ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "M PLUS Rounded 1c", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 400px at 10% -10%, #ffe3f3 0%, transparent 50%),
+        radial-gradient(700px 400px at 100% 0%, #d9fff3 0%, transparent 45%),
+        radial-gradient(600px 300px at 50% 100%, #fff4c8 0%, transparent 40%),
+        var(--bg);
+    }
+    header {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 40px 24px 12px;
+    }
+    h1 { font-size: 32px; margin: 0 0 8px; }
+    .lead { color: var(--muted); line-height: 1.7; max-width: 720px; }
+    .grid {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px 24px 64px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    article {
+      background: #fff;
+      border: 2px solid #fff;
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(80, 40, 120, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview iframe {
+      width: 1440px;
+      height: 900px;
+      border: 0;
+      transform: scale(0.28);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+    .body { padding: 20px 22px 24px; flex: 1; display: flex; flex-direction: column; }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    h2 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    ul { margin: 0 0 18px; padding-left: 18px; color: var(--ink); font-size: 14px; line-height: 1.7; }
+    a.btn {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 800;
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .a .tag { background: #ffe3f0; color: #d0126a; }
+    .a .preview { background: #fff5fa; }
+    .a a.btn { background: #ff2d92; }
+    .b .tag { background: #e0f8ff; color: #0077a8; }
+    .b .preview { background: #f3fcff; }
+    .b a.btn { background: #00b3e6; }
+    .c .tag { background: #e9ffe0; color: #2a7a00; }
+    .c .preview { background: #f6fff1; }
+    .c a.btn { background: #3ccf00; }
+    footer {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UI / UX 方向の比較</h1>
+    <p class="lead">
+      仕様は共通です。見た目と空気感だけが違います。各カードから実寸のモックを開き、
+      タイトル → 難易度 → プレイ → 結果 → 分析 を行き来して比べてください。
+    </p>
+  </header>
+  <div class="grid">
+    <article class="a">
+      <div class="preview"><iframe src="pattern-a.html" title="A preview"></iframe></div>
+      <div class="body">
+        <span class="tag">PATTERN A</span>
+        <h2>ワークスペースポップ</h2>
+        <p>いちばん Slack に近い骨格。明るいサイドバーと丸いアバター、年収はヘッダーのピル。日常業務っぽさとポップさを両立。</p>
+        <ul>
+          <li>チャット製品の再現度が高い</li>
+          <li>装飾は控えめ、色はアバターとバッジで出す</li>
+          <li>長時間プレイしても疲れにくい想定</li>
+        </ul>
+        <a class="btn" href="pattern-a.html">A を開く</a>
+      </div>
+    </article>
+    <article class="b">
+      <div class="preview"><iframe src="pattern-b.html" title="B preview"></iframe></div>
+      <div class="body">
+        <span class="tag">PATTERN B</span>
+        <h2>年収アーケード</h2>
+        <p>チャットは残しつつ、年収・タイマー・コンボをゲームHUDとして前面に出す。送信の快感とスコアの伸びを最優先。</p>
+        <ul>
+          <li>寿司打的な「稼いでいる感」が強い</li>
+          <li>ネオン寄りのビビッド配色</li>
+          <li>入力欄が司令室コンソール</li>
+        </ul>
+        <a class="btn" href="pattern-b.html">B を開く</a>
+      </div>
+    </article>
+    <article class="c">
+      <div class="preview"><iframe src="pattern-c.html" title="C preview"></iframe></div>
+      <div class="body">
+        <span class="tag">PATTERN C</span>
+        <h2>スタートアップステッカー</h2>
+        <p>雑誌の特集のような大きな文字と、LGTM / hotfix 風ステッカー。ホームがカードの弁当レイアウト。世界観のネタが強い。</p>
+        <ul>
+          <li>カタカナ好き主人公の世界観が前面</li>
+          <li>パステル＋原色のシール感</li>
+          <li>分析画面もダッシュボードっぽい</li>
+        </ul>
+        <a class="btn" href="pattern-c.html">C を開く</a>
+      </div>
+    </article>
+  </div>
+  <footer>
+    選ぶときの観点の例: 「毎日打ちたい見た目か」「年収が主スコアだと一瞬で分かるか」「返信文が読みやすいか」「Slack風で迷わないか」。
+    組み合わせ（例: 骨格はA、プレイ中HUDだけB）でも構いません。
+  </footer>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>B. 年収アーケード</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #14121c;
+      --muted: #5a5670;
+      --neon: #00e5ff;
+      --mag: #ff2bd6;
+      --yel: #ffe14d;
+      --lime: #b6ff3b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "M PLUS 1p", sans-serif;
+      color: var(--ink);
+      background: #f7fbff;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px; background: #fff; border-bottom: 3px solid #111;
+    }
+    .brand { font-family: Outfit, sans-serif; font-weight: 800; }
+    .screens button {
+      font-family: inherit; font-weight: 800; border: 2px solid #111; background: #fff;
+      border-radius: 999px; padding: 6px 12px; cursor: pointer; margin-left: 4px;
+    }
+    .screens button.on { background: var(--yel); }
+    .view { display: none; }
+    .view.on { display: block; }
+    .btn {
+      font-family: inherit; font-weight: 800; cursor: pointer; border: 3px solid #111;
+      border-radius: 14px; padding: 12px 18px; box-shadow: 4px 4px 0 #111;
+    }
+    .btn-main { background: var(--mag); color: #fff; }
+    .btn-sub { background: #fff; }
+
+    #title .wrap, #diff .wrap, #result .wrap, #stats .wrap {
+      max-width: 900px; margin: 36px auto; padding: 0 20px 40px;
+    }
+    .hero {
+      background: #fff; border: 3px solid #111; border-radius: 28px; padding: 40px;
+      box-shadow: 10px 10px 0 #111;
+    }
+    h1 { font-family: Outfit, sans-serif; font-size: 52px; margin: 0 0 8px; }
+    .yen-big {
+      font-family: Outfit, sans-serif; font-size: 72px; margin: 0;
+      background: linear-gradient(90deg, var(--mag), #ff8a00);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+    .card {
+      border: 3px solid #111; border-radius: 18px; padding: 16px; background: #fff;
+      text-align: left; cursor: pointer; font-family: inherit; box-shadow: 5px 5px 0 #111;
+    }
+    .c1 { background: #d8fff1; }
+    .c2 { background: #fff4b0; }
+    .c3 { background: #ffd0f3; }
+
+    .play { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 54px); }
+    .side { background: #111; color: #fff; padding: 16px; }
+    .side h3 { font-family: Outfit, sans-serif; margin: 0 0 12px; }
+    .ch { opacity: 0.55; padding: 8px 0; }
+    .ch.on { opacity: 1; color: var(--neon); font-weight: 800; }
+    .hud {
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 10px; padding: 12px; background: #fff; border-bottom: 3px solid #111;
+    }
+    .hud > div {
+      border: 3px solid #111; border-radius: 16px; padding: 10px 14px; font-weight: 800;
+    }
+    .h-sal { background: var(--yel); }
+    .h-time { background: var(--neon); }
+    .h-combo { background: var(--lime); }
+    .h-sal b, .h-time b, .h-combo b { display: block; font-family: Outfit, sans-serif; font-size: 28px; }
+    .msgs { padding: 18px; }
+    .bubble {
+      max-width: 680px; background: #fff; border: 3px solid #111; border-radius: 18px;
+      padding: 12px 14px; margin-bottom: 12px; box-shadow: 4px 4px 0 #ff9ad8;
+    }
+    .me { box-shadow: 4px 4px 0 var(--neon); margin-left: 40px; }
+    .done { color: #0a7a40; font-weight: 800; }
+    .cur { background: var(--mag); color: #fff; padding: 0 2px; }
+    .rest { color: #b8b3c6; }
+    .console {
+      margin: 0 12px 16px; background: #111; color: var(--lime); border-radius: 18px;
+      padding: 16px; font-family: ui-monospace, Consolas, monospace; border: 3px solid var(--mag);
+    }
+    .prompt { color: var(--neon); }
+
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+    .stat { border: 3px solid #111; border-radius: 14px; padding: 12px; background: #fff; }
+    .stat b { font-family: Outfit, sans-serif; font-size: 26px; display: block; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { border-bottom: 2px solid #111; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">B. 年収アーケード</div>
+    <div class="screens">
+      <button class="on" data-go="title">タイトル</button>
+      <button data-go="diff">難易度</button>
+      <button data-go="play">プレイ</button>
+      <button data-go="result">結果</button>
+      <button data-go="stats">分析</button>
+    </div>
+    <div style="font-size:12px;font-weight:800">モック</div>
+  </div>
+
+  <section id="title" class="view on">
+    <div class="wrap"><div class="hero">
+      <div style="font-weight:800;color:var(--mag)">TYPE FOR SALARY</div>
+      <h1>チャット年収打</h1>
+      <p>60秒のスプリント。返信を打ち切るたび、年収が跳ねる。</p>
+      <button class="btn btn-main" data-go="diff">START SHIFT</button>
+      <button class="btn btn-sub" data-go="stats" style="margin-left:8px">STATS</button>
+    </div></div>
+  </section>
+
+  <section id="diff" class="view">
+    <div class="wrap">
+      <h1>SELECT ROLE</h1>
+      <div class="cards">
+        <button class="card c1" data-go="play"><b>初級</b><div>新米エンジニア</div><p>短い。単価は低め。通数で稼ぐ。</p></button>
+        <button class="card c2" data-go="play"><b>中級</b><div>慣れてきた</div><p>記号が増える。単価アップ。</p></button>
+        <button class="card c3" data-go="play"><b>上級</b><div>つよつよ</div><p>長文高単価。ミスは痛い。</p></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="play" class="view">
+    <div class="play">
+      <aside class="side">
+        <h3>KAOS</h3>
+        <div class="ch"># random</div>
+        <div class="ch on"># web-fullstack</div>
+        <div class="ch"># incident-warroom</div>
+        <div class="ch"># review-please</div>
+      </aside>
+      <div>
+        <div class="hud">
+          <div class="h-sal">GAME年収<b>¥1,240,000</b></div>
+          <div class="h-time">TIME<b>00:47</b></div>
+          <div class="h-combo">COMBO<b>36</b></div>
+        </div>
+        <div class="msgs">
+          <div class="bubble"><b>佐藤 PdM</b><br>PR #123 のレビューお願いできますか？</div>
+          <div class="bubble me"><b>あなた</b><br>
+            <span class="done">確認します。少々お待ちください。</span><span class="cur">コ</span><span class="rest">ーヒーはまだ飲めるので大丈夫です。</span>
+          </div>
+        </div>
+        <div class="console">
+          <div class="prompt">you@kaos:~$ type --reply</div>
+          <div>kakuninsimasu.syousyouomatikudasai.<span style="background:var(--mag);color:#fff">k</span><span style="opacity:.35">ohi-ha...</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="view">
+    <div class="wrap"><div class="hero">
+      <div>SHIFT CLEAR · 初級 · 8通</div>
+      <p class="yen-big">¥4,820,000</p>
+      <div class="grid4">
+        <div class="stat">速度<b>312</b>キー/分</div>
+        <div class="stat">正確性<b>97.4%</b></div>
+        <div class="stat">ミス<b>11</b></div>
+        <div class="stat">最大連続<b>86</b></div>
+      </div>
+      <button class="btn btn-main" data-go="play">RETRY</button>
+      <button class="btn btn-sub" data-go="stats">STATS</button>
+    </div></div>
+  </section>
+
+  <section id="stats" class="view">
+    <div class="wrap"><div class="hero">
+      <h1>WEAK SPOTS</h1>
+      <table>
+        <tr><th>キー</th><th>入力</th><th>ミス</th><th>率</th></tr>
+        <tr><td>P</td><td>42</td><td>11</td><td>26.2%</td></tr>
+        <tr><td>;</td><td>38</td><td>8</td><td>21.1%</td></tr>
+        <tr><td>Y</td><td>61</td><td>9</td><td>14.8%</td></tr>
+      </table>
+      <p><b>指:</b> 右小指 18.4%　左薬指 12.1%</p>
+      <p><b>動き:</b> R→E 22.0%　L→P 19.4%</p>
+    </div></div>
+  </section>
+
+  <script>
+    function go(id) {
+      document.querySelectorAll(".view").forEach((v) => v.classList.toggle("on", v.id === id));
+      document.querySelectorAll(".screens button").forEach((b) => b.classList.toggle("on", b.dataset.go === id));
+    }
+    document.querySelectorAll("[data-go]").forEach((el) => el.addEventListener("click", () => go(el.dataset.go)));
+  </script>
+</body>
+</html>

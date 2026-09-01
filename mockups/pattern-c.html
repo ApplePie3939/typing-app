@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>C. スタートアップステッカー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Zen Maru Gothic", sans-serif;
+      color: #241b16;
+      background:
+        radial-gradient(circle at 12% 20%, #ffd6e8 0 18%, transparent 19%),
+        radial-gradient(circle at 88% 10%, #c8f7ff 0 16%, transparent 17%),
+        radial-gradient(circle at 80% 80%, #e4ffb5 0 20%, transparent 21%),
+        #fffaf3;
+    }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px;
+    }
+    .brand { font-family: Fredoka, sans-serif; font-size: 20px; }
+    .screens button {
+      border: 0; background: #fff; font-family: inherit; font-weight: 700;
+      padding: 8px 12px; border-radius: 999px; cursor: pointer; box-shadow: 0 6px 0 #f0c2d8;
+      margin-left: 6px;
+    }
+    .screens button.on { background: #ff7ab0; color: #fff; box-shadow: 0 6px 0 #c94d84; }
+    .view { display: none; }
+    .view.on { display: block; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 10px 20px 48px; }
+
+    .sticker {
+      display: inline-block; transform: rotate(-6deg);
+      background: #ffef5a; border: 2px dashed #111; padding: 4px 10px;
+      font-family: Fredoka, sans-serif; font-weight: 700;
+    }
+    h1 { font-family: Fredoka, sans-serif; font-size: 48px; margin: 12px 0; }
+    .bento {
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px;
+    }
+    .tile {
+      background: #fff; border-radius: 28px; padding: 24px;
+      box-shadow: 0 12px 0 rgba(0,0,0,.08);
+    }
+    .t-pink { background: #ffe3f0; }
+    .t-mint { background: #d9fff2; }
+    .t-sky { background: #d9f4ff; }
+    .t-peach { background: #ffe7d1; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .btn {
+      border: 0; font-family: inherit; font-weight: 900; cursor: pointer;
+      border-radius: 999px; padding: 12px 18px;
+    }
+    .btn-main { background: #241b16; color: #fff; }
+    .btn-sub { background: #fff; }
+
+    .roles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .role { border: 0; border-radius: 24px; padding: 20px; text-align: left; cursor: pointer; font-family: inherit; box-shadow: 0 10px 0 rgba(0,0,0,.08); }
+    .badge { font-family: Fredoka, sans-serif; font-size: 12px; background: #fff; border-radius: 8px; padding: 2px 8px; }
+
+    .play {
+      display: grid; grid-template-columns: 200px 1fr; gap: 12px;
+      min-height: calc(100vh - 70px); padding: 0 16px 16px;
+    }
+    .side { background: #fff; border-radius: 24px; padding: 16px; }
+    .ch { padding: 8px; border-radius: 12px; }
+    .ch.on { background: #ffe3f0; font-weight: 900; }
+    .chat { background: #fff; border-radius: 28px; display: flex; flex-direction: column; overflow: hidden; }
+    .head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; background: #fff4d6;
+    }
+    .chip { background: #fff; border-radius: 999px; padding: 6px 12px; font-weight: 900; }
+    .chip.yen { background: #b6ff64; }
+    .msgs { padding: 18px; flex: 1; }
+    .row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; }
+    .speech { background: #f6f3ff; border-radius: 18px; padding: 10px 14px; }
+    .mine { background: #e8ffe3; }
+    .done { color: #2a8a22; }
+    .cur { outline: 3px solid #ff7ab0; background: #fff; }
+    .rest { color: #cbb; }
+    .input {
+      margin: 0 16px 16px; background: #fff7fb; border-radius: 20px; padding: 14px;
+      font-family: ui-monospace, Consolas, monospace;
+    }
+    .tag {
+      display: inline-block; margin-right: 6px; font-size: 11px; font-weight: 900;
+      background: #ff7ab0; color: #fff; border-radius: 6px; padding: 2px 6px; transform: rotate(3deg);
+    }
+
+    .yen { font-family: Fredoka, sans-serif; font-size: 64px; margin: 0; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0; }
+    .kpi { background: #fff; border-radius: 18px; padding: 14px; }
+    .kpi b { font-size: 22px; display: block; }
+    .finger {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .finger span {
+      background: #fff; border-radius: 16px; padding: 10px 12px; font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">C. スタートアップステッカー</div>
+    <div class="screens">
+      <button class="on" data-go="title">タイトル</button>
+      <button data-go="diff">難易度</button>
+      <button data-go="play">プレイ</button>
+      <button data-go="result">結果</button>
+      <button data-go="stats">分析</button>
+    </div>
+  </div>
+
+  <section id="title" class="view on">
+    <div class="wrap">
+      <span class="sticker">LGTM? まず打て</span>
+      <h1>チャット年収打</h1>
+      <div class="bento">
+        <div class="tile t-pink">
+          <h2 style="margin-top:0">社内チャットを、年収に変換する。</h2>
+          <p>カタカナを愛するフルスタが、トラブル多めのカオスワークスで生きる。1通につきボケは必須です。</p>
+          <div class="actions">
+            <button class="btn btn-main" data-go="diff">今日のシナジーを生む</button>
+            <button class="btn btn-sub" data-go="stats">ウィークポイント</button>
+          </div>
+        </div>
+        <div class="tile t-mint">
+          <div class="badge">TODAY</div>
+          <p style="font-size:28px;font-weight:900;margin:8px 0 0">本番がまた落ちてる</p>
+          <p>打ち返せ。年収はタイピングで決まる。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="diff" class="view">
+    <div class="wrap">
+      <h1>ロールを貼る</h1>
+      <div class="roles">
+        <button class="role t-mint" data-go="play"><span class="badge">NEW GRAD</span><h3>初級 新米</h3><p>短い。初々しい。ボケは弱め。</p></button>
+        <button class="role t-peach" data-go="play"><span class="badge">ON FIRE</span><h3>中級 慣れてきた</h3><p>メンションと PR。ちょっと調子に乗る。</p></button>
+        <button class="role t-sky" data-go="play"><span class="badge">UNSTOPPABLE</span><h3>上級 つよつよ</h3><p>複数行 Markdown。自信しかない。</p></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="play" class="view">
+    <div class="play">
+      <aside class="side">
+        <div style="font-weight:900;margin-bottom:8px">カオスワークス</div>
+        <div class="ch"># random</div>
+        <div class="ch on"># web-fullstack</div>
+        <div class="ch"># incident-warroom</div>
+        <div class="ch"># customer-voice</div>
+        <p style="font-size:12px;color:#888">チャンネル切替は装飾です</p>
+      </aside>
+      <div class="chat">
+        <div class="head">
+          <div><b># web-fullstack</b> <span class="tag">hotfix</span></div>
+          <div>
+            <span class="chip">0:47</span>
+            <span class="chip yen">¥1,240,000</span>
+          </div>
+        </div>
+        <div class="msgs">
+          <div class="row">
+            <div class="av" style="background:#ffcf70">佐</div>
+            <div class="speech"><b>佐藤 PdM</b><br>PR #123 のレビューお願いできますか？</div>
+          </div>
+          <div class="row">
+            <div class="av" style="background:#c5b6ff">あ</div>
+            <div class="speech mine"><b>あなた</b><br>
+              <span class="done">確認します。少々お待ちください。</span><span class="cur">コ</span><span class="rest">ーヒーはまだ飲めるので大丈夫です。</span>
+            </div>
+          </div>
+        </div>
+        <div class="input">
+          kakuninsimasu.syousyouomatikudasai.<span style="background:#ff7ab0;color:#fff">k</span><span style="color:#d8c4ce">ohi-ha...</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="view">
+    <div class="wrap">
+      <div class="tile t-peach">
+        <span class="sticker">退勤シール</span>
+        <p class="yen">¥4,820,000</p>
+        <p>初級 · 8通のフルコミット、おつかれさまです。</p>
+        <div class="kpis">
+          <div class="kpi t-mint">速度<b>312</b>キー/分</div>
+          <div class="kpi t-sky">正確性<b>97.4%</b></div>
+          <div class="kpi t-pink">ミス<b>11</b></div>
+          <div class="kpi">最大連続<b>86</b></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-main" data-go="play">もう一スプリント</button>
+          <button class="btn btn-sub" data-go="stats">分析</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stats" class="view">
+    <div class="wrap">
+      <h1>ウィークポイント</h1>
+      <div class="bento">
+        <div class="tile">
+          <h3>苦手キー</h3>
+          <p><b>P</b> 26.2%　<b>;</b> 21.1%　<b>Y</b> 14.8%</p>
+          <h3>苦手な動き</h3>
+          <p>R→E / L→P / S→Y</p>
+        </div>
+        <div class="tile t-sky">
+          <h3>苦手な指</h3>
+          <div class="finger">
+            <span>右 小指 18.4%</span>
+            <span>左 薬指 12.1%</span>
+            <span>右 人差指 7.6%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function go(id) {
+      document.querySelectorAll(".view").forEach((v) => v.classList.toggle("on", v.id === id));
+      document.querySelectorAll(".screens button").forEach((b) => b.classList.toggle("on", b.dataset.go === id));
+    }
+    document.querySelectorAll("[data-go]").forEach((el) => el.addEventListener("click", () => go(el.dataset.go)));
+  </script>
+</body>
+</html>

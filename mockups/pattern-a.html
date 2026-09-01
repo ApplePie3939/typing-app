@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A. ワークスペースポップ</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f6f3fb;
+      --panel: #ffffff;
+      --ink: #1e1b2a;
+      --muted: #6b6578;
+      --line: #ece7f4;
+      --pink: #ff2d92;
+      --violet: #7a5cff;
+      --cyan: #00c2d7;
+      --lime: #7adf2a;
+      --orange: #ff8a1f;
+      --yellow: #ffd000;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "M PLUS Rounded 1c", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar {
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+    .brand { display: flex; gap: 10px; align-items: center; font-weight: 800; }
+    .logo {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--pink), var(--violet));
+    }
+    .screens { display: flex; gap: 6px; flex-wrap: wrap; }
+    .screens button {
+      border: 0; background: #f3eefb; color: var(--ink);
+      border-radius: 999px; padding: 6px 12px; font-weight: 700; cursor: pointer;
+      font-family: inherit;
+    }
+    .screens button.on { background: var(--violet); color: #fff; }
+    .note { font-size: 12px; color: var(--muted); }
+    .view { display: none; }
+    .view.on { display: block; }
+
+    /* TITLE */
+    .hero {
+      max-width: 880px; margin: 48px auto; padding: 0 24px;
+    }
+    .hero-card {
+      background: #fff; border-radius: 28px; padding: 48px;
+      box-shadow: 0 20px 50px rgba(90, 50, 140, 0.08);
+    }
+    .kicker { color: var(--pink); font-weight: 800; letter-spacing: 0.08em; }
+    .hero h1 { font-family: Nunito, sans-serif; font-size: 48px; margin: 8px 0 12px; }
+    .hero p { color: var(--muted); line-height: 1.8; }
+    .actions { display: flex; gap: 12px; margin-top: 28px; }
+    .btn {
+      border: 0; cursor: pointer; font-family: inherit; font-weight: 800;
+      border-radius: 14px; padding: 14px 20px;
+    }
+    .btn-main { background: var(--pink); color: #fff; }
+    .btn-sub { background: #f3eefb; color: var(--ink); }
+
+    /* DIFF */
+    .diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .diff {
+      border: 2px solid var(--line); border-radius: 20px; padding: 20px; background: #fff; cursor: pointer; text-align: left;
+      font-family: inherit;
+    }
+    .diff:hover { border-color: var(--violet); }
+    .diff h3 { margin: 0 0 6px; }
+    .diff p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .pill { display: inline-block; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; margin-bottom: 8px; }
+    .p1 { background: #d9fff0; color: #0a8a4b; }
+    .p2 { background: #fff3c9; color: #a36b00; }
+    .p3 { background: #ffe0ef; color: #c0126a; }
+
+    /* PLAY */
+    .play { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 56px); }
+    .side {
+      background: #fff; border-right: 1px solid var(--line); padding: 16px 12px;
+    }
+    .ws { display: flex; align-items: center; gap: 10px; padding: 8px; font-weight: 800; }
+    .ws-mark { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--cyan), var(--lime)); color: #fff; display: grid; place-items: center; font-weight: 800; }
+    .ch { padding: 8px 10px; border-radius: 8px; color: var(--muted); font-size: 14px; }
+    .ch.on { background: #f3eefb; color: var(--ink); font-weight: 700; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .chat { display: flex; flex-direction: column; min-width: 0; }
+    .chat-head {
+      height: 64px; border-bottom: 1px solid var(--line); background: #fff;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+    }
+    .salary {
+      background: #fff7d6; border: 2px solid var(--yellow); color: #7a5a00;
+      font-weight: 800; border-radius: 999px; padding: 8px 14px;
+    }
+    .timer { background: #e8fbff; color: #007a8a; font-weight: 800; border-radius: 999px; padding: 8px 14px; }
+    .msgs { flex: 1; padding: 20px; overflow: auto; }
+    .msg { display: flex; gap: 12px; margin-bottom: 18px; }
+    .av { width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center; color: #fff; font-weight: 800; }
+    .name { font-weight: 800; font-size: 13px; }
+    .meta { color: var(--muted); font-size: 12px; margin-left: 8px; font-weight: 500; }
+    .bubble { line-height: 1.7; }
+    .typed .done { color: #0a8a4b; }
+    .typed .cur { background: #ffd0ea; border-radius: 3px; }
+    .typed .rest { color: #b0a8bd; }
+    .composer {
+      margin: 0 16px 16px; background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px;
+    }
+    .composer label { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .fake-input {
+      margin-top: 6px; font-family: ui-monospace, Consolas, monospace; font-size: 16px;
+      background: #faf8ff; border-radius: 10px; padding: 12px; letter-spacing: 0.02em;
+    }
+    .ok { color: #0a8a4b; }
+    .bad { background: #ffd6e4; color: #c0126a; }
+    .wait { color: #c8c2d4; }
+
+    /* RESULT / STATS */
+    .page { max-width: 920px; margin: 32px auto; padding: 0 20px 48px; }
+    .panel { background: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 12px 32px rgba(80,40,120,.06); }
+    .yen { font-size: 56px; font-family: Nunito, sans-serif; margin: 8px 0 4px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0; }
+    .stat { background: #faf8ff; border-radius: 16px; padding: 16px; }
+    .stat b { display: block; font-size: 22px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 700; }
+    .bar { height: 8px; background: #eee8f7; border-radius: 99px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; background: var(--pink); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand"><span class="logo"></span> A. ワークスペースポップ</div>
+      <div class="screens">
+        <button class="on" data-go="title">タイトル</button>
+        <button data-go="diff">難易度</button>
+        <button data-go="play">プレイ</button>
+        <button data-go="result">結果</button>
+        <button data-go="stats">分析</button>
+      </div>
+      <div class="note">モック・操作は画面切替のみ</div>
+    </div>
+
+    <section id="title" class="view on">
+      <div class="hero">
+        <div class="hero-card">
+          <div class="kicker">KAOS WORKS 内部ツール風</div>
+          <h1>チャット年収打</h1>
+          <p>相手のメンションに、カタカナ多めの返信を打ち返す。速さも正確さも、ぜんぶ年収になる。</p>
+          <div class="actions">
+            <button class="btn btn-main" data-go="diff">業務を開始する</button>
+            <button class="btn btn-sub" data-go="stats">分析を見る</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="diff" class="view">
+      <div class="hero">
+        <h1>今日のロール</h1>
+        <p>肩書きを選ぶと、打ち返す文章の長さと記号の量が変わります。</p>
+        <div class="diff-grid">
+          <button class="diff" data-go="play"><span class="pill p1">BEGINNER</span><h3>初級 / 新米エンジニア</h3><p>短い返信。記号は少なめ。丁寧で、ちょっとだけボケる。</p></button>
+          <button class="diff" data-go="play"><span class="pill p2">INTERMEDIATE</span><h3>中級 / 慣れてきた</h3><p>メンション、PR番号、軽い Markdown。調子に乗り始める。</p></button>
+          <button class="diff" data-go="play"><span class="pill p3">ADVANCED</span><h3>上級 / つよつよ</h3><p>複数行、引用、技術用語。自分に絶対的な自信がある。</p></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="play" class="view">
+      <div class="play">
+        <aside class="side">
+          <div class="ws"><span class="ws-mark">K</span>カオスワークス</div>
+          <div class="ch"><span class="dot" style="background:#7adf2a"></span># random</div>
+          <div class="ch on"><span class="dot" style="background:#ff2d92"></span># web-fullstack</div>
+          <div class="ch"><span class="dot" style="background:#ff8a1f"></span># incident-warroom</div>
+          <div class="ch"><span class="dot" style="background:#7a5cff"></span># review-please</div>
+          <div class="ch"><span class="dot" style="background:#00c2d7"></span># customer-voice</div>
+        </aside>
+        <div class="chat">
+          <div class="chat-head">
+            <div>
+              <strong># web-fullstack</strong>
+              <div class="note">佐藤, 田中, あなた</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div class="timer">残り 0:47</div>
+              <div class="salary">年収 ¥1,240,000</div>
+            </div>
+          </div>
+          <div class="msgs">
+            <div class="msg">
+              <div class="av" style="background:#ff8a1f">佐</div>
+              <div>
+                <div><span class="name">佐藤 PdM</span><span class="meta">10:04</span></div>
+                <div class="bubble">PR #123 のレビューお願いできますか？今日中だと超助かります。</div>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="av" style="background:#7a5cff">あ</div>
+              <div>
+                <div><span class="name">あなた</span><span class="meta">入力中</span></div>
+                <div class="bubble typed">
+                  <span class="done">確認します。少々お待ちください。</span><span class="cur">コ</span><span class="rest">ーヒーはまだ飲めるので大丈夫です。</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="composer">
+            <label>ローマ字で返信を打つ</label>
+            <div class="fake-input">
+              <span class="ok">kakuninsimasu.syousyouomatikudasai.</span><span class="bad">k</span><span class="wait">ohi-hamadanoeru...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" class="view">
+      <div class="page">
+        <div class="panel">
+          <div class="kicker">退勤レポート · 初級</div>
+          <div class="yen">¥4,820,000</div>
+          <p style="color:var(--muted);margin:0">ゲーム内年収 · 8通送信</p>
+          <div class="stats">
+            <div class="stat"><span>入力速度</span><b>312</b>キー/分</div>
+            <div class="stat"><span>正確性</span><b>97.4%</b></div>
+            <div class="stat"><span>ミス数</span><b>11</b></div>
+            <div class="stat"><span>最大連続</span><b>86</b></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-main" data-go="play">もう一度</button>
+            <button class="btn btn-sub" data-go="diff">難易度を変える</button>
+            <button class="btn btn-sub" data-go="stats">分析を見る</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats" class="view">
+      <div class="page">
+        <div class="panel">
+          <h2 style="margin-top:0">タイピング分析</h2>
+          <p style="color:var(--muted)">累計 · 苦手の上位だけを見やすく</p>
+          <h3>苦手キー</h3>
+          <table>
+            <thead><tr><th>キー</th><th>入力</th><th>ミス</th><th>ミス率</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><code>P</code></td><td>42</td><td>11</td><td>26.2%</td><td><div class="bar"><i style="width:26%"></i></div></td></tr>
+              <tr><td><code>;</code></td><td>38</td><td>8</td><td>21.1%</td><td><div class="bar"><i style="width:21%"></i></div></td></tr>
+              <tr><td><code>Y</code></td><td>61</td><td>9</td><td>14.8%</td><td><div class="bar"><i style="width:15%"></i></div></td></tr>
+            </tbody>
+          </table>
+          <h3>苦手な指</h3>
+          <table>
+            <tbody>
+              <tr><td>右 小指</td><td>ミス率 18.4%</td></tr>
+              <tr><td>左 薬指</td><td>ミス率 12.1%</td></tr>
+              <tr><td>右 人差指</td><td>ミス率 7.6%</td></tr>
+            </tbody>
+          </table>
+          <h3>苦手な動き</h3>
+          <table>
+            <tbody>
+              <tr><td><code>R → E</code></td><td>ミス率 22.0%</td></tr>
+              <tr><td><code>L → P</code></td><td>ミス率 19.4%</td></tr>
+              <tr><td><code>S → Y</code></td><td>ミス率 16.8%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    function go(id) {
+      document.querySelectorAll(".view").forEach((v) => v.classList.toggle("on", v.id === id));
+      document.querySelectorAll(".screens button").forEach((b) => b.classList.toggle("on", b.dataset.go === id));
+    }
+    document.querySelectorAll("[data-go]").forEach((el) => {
+      el.addEventListener("click", () => go(el.dataset.go));
+    });
+  </script>
+</body>
+</html>
