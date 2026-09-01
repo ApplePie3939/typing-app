@@ -32,6 +32,10 @@ describe('createRomajiMatcher', () => {
     expect(nn.feed('n')).toBe('ok');
     expect(nn.feed('n')).toBe('ok');
     expect(nn.feed('a')).toBe('complete');
+    const nApos = createRomajiMatcher('んあ');
+    expect(nApos.feed('n')).toBe('ok');
+    expect(nApos.feed("'")).toBe('ok');
+    expect(nApos.feed('a')).toBe('complete');
   });
 
   it('accepts n then k for んか', () => {
@@ -39,6 +43,49 @@ describe('createRomajiMatcher', () => {
     expect(matcher.feed('n')).toBe('ok');
     expect(matcher.feed('k')).toBe('ok');
     expect(matcher.feed('a')).toBe('complete');
+  });
+
+  it('completes あんない as annai', () => {
+    const matcher = createRomajiMatcher('あんない');
+    expect(
+      Array.from('annai')
+        .map((k) => matcher.feed(k))
+        .at(-1),
+    ).toBe('complete');
+  });
+
+  it('completes たいけんの as taikenno', () => {
+    const matcher = createRomajiMatcher('たいけんの');
+    expect(
+      Array.from('taikenno')
+        .map((k) => matcher.feed(k))
+        .at(-1),
+    ).toBe('complete');
+  });
+
+  it('completes ほんやく as honyaku', () => {
+    const matcher = createRomajiMatcher('ほんやく');
+    expect(
+      Array.from('honyaku')
+        .map((k) => matcher.feed(k))
+        .at(-1),
+    ).toBe('complete');
+  });
+
+  it('completes んな as nnna', () => {
+    const matcher = createRomajiMatcher('んな');
+    expect(
+      Array.from('nnna')
+        .map((k) => matcher.feed(k))
+        .at(-1),
+    ).toBe('complete');
+  });
+
+  it('hints the second n after the first n of ん', () => {
+    const matcher = createRomajiMatcher('あんない');
+    expect(matcher.feed('a')).toBe('ok');
+    expect(matcher.feed('n')).toBe('ok');
+    expect(matcher.hint().current).toBe('n');
   });
 
   it('counts misses without advancing', () => {

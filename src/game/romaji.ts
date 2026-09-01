@@ -211,7 +211,7 @@ const ROMAJI: Record<string, string[]> = {
   '】': [']'],
 };
 
-const VOWEL_START = /^[aiueoy]/;
+const VOWEL_START = /^[aiueo]/;
 
 function nOptions(next: string | undefined): string[] {
   if (!next) return ['nn', "n'", 'n'];
@@ -288,6 +288,18 @@ export function createRomajiMatcher(reading: string) {
   const isExact = (opts: string[], value: string) => opts.includes(value);
   const canContinue = (opts: string[], value: string) =>
     opts.some((o) => o.startsWith(value) && o.length > value.length);
+  const hasShorterExact = (opts: string[], value: string) =>
+    opts.some((o) => o.length < value.length && value.startsWith(o));
+
+  function snapshot() {
+    return { index, typed, committed };
+  }
+
+  function restore(state: { index: number; typed: string; committed: string }) {
+    index = state.index;
+    typed = state.typed;
+    committed = state.committed;
+  }
 
   function feed(key: string): RomajiResult {
     if (index >= options.length) return 'complete';
@@ -295,7 +307,7 @@ export function createRomajiMatcher(reading: string) {
     const nextTyped = typed + key;
     if (opts.some((o) => o.startsWith(nextTyped))) {
       typed = nextTyped;
-      if (isExact(opts, typed) && !canContinue(opts, typed)) {
+      if (isExact(opts, typed) && !canContinue(opts, typed) && !hasShorterExact(opts, typed)) {
         committed += typed;
         index += 1;
         typed = '';
@@ -303,11 +315,17 @@ export function createRomajiMatcher(reading: string) {
       }
       return 'ok';
     }
-    if (typed && isExact(opts, typed)) {
-      committed += typed;
+    const exactPrefixes = [
+      ...new Set(opts.filter((o) => typed.startsWith(o) && o.length > 0)),
+    ].sort((a, b) => b.length - a.length);
+    for (const prefix of exactPrefixes) {
+      const saved = snapshot();
+      committed += prefix;
       index += 1;
-      typed = '';
-      return feed(key);
+      typed = typed.slice(prefix.length);
+      const result = feed(key);
+      if (result !== 'miss') return result;
+      restore(saved);
     }
     if (!typed && isSkippableSpace(tokens[index]) && key !== ' ') {
       committed += tokens[index];
@@ -343,8 +361,13 @@ export function createRomajiMatcher(reading: string) {
     hint(): { current: string; rest: string } {
       if (index >= options.length) return { current: '', rest: '' };
       const opts = options[index];
-      const best = opts.find((o) => o.startsWith(typed)) ?? opts[0];
-      const remain = best.slice(typed.length);
+      const matching = opts.filter((o) => o.startsWith(typed));
+      const extendable = matching.find((o) => o.length > typed.length);
+      const best = extendable ?? matching[0] ?? opts[0];
+      let remain = best.slice(typed.length);
+      if (!remain && index + 1 < options.length) {
+        remain = options[index + 1][0];
+      }
       return { current: remain.slice(0, 1), rest: remain.slice(1) };
     },
   };
